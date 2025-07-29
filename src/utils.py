@@ -9,8 +9,6 @@ import json
 import requests
 from dotenv import load_dotenv
 
-# Добавляем путь до корня проекта
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -61,7 +59,7 @@ def read_xlsx_file(path_to_file:str) -> pd.core.frame.DataFrame:
     """Функция читает xlsx-файл и возвращает DataFrame"""
     read_xlsx_file_logger = logging.getLogger("read_xlsx_file")
 
-    excel_data=pd.read_excel(path_to_file)
+    excel_data = pd.read_excel(path_to_file)
 
     read_xlsx_file_logger.info(f'Открыт файл {path_to_file}.')
 
@@ -69,7 +67,8 @@ def read_xlsx_file(path_to_file:str) -> pd.core.frame.DataFrame:
 
 
 def str_to_date(date_str:str) -> datetime.datetime:
-    """Функция преобразует входящую строку в объект datetime"""
+    """Функция преобразует входящую строку формата '%d.%m.%Y %H:%M:%S'
+     в объект datetime"""
     str_to_date_logger = logging.getLogger("str_to_date")
 
     date_result = datetime.datetime.strptime(date_str, '%d.%m.%Y %H:%M:%S')
@@ -80,8 +79,8 @@ def str_to_date(date_str:str) -> datetime.datetime:
 
 
 def filter_by_date(excel_data:pd.core.frame.DataFrame, moment:str)->pd.core.frame.DataFrame:
-    """Функция принимает на вход датафрейм с транзакциями и дату. На выходе выдает
-    датафрейм с транзакциями, прошедшими от начала месяца до введённой даты. """
+    """Функция принимает на вход датафрейм с транзакциями и дату в формате YYYY-MM-DD HH:MM:SS.
+    На выходе выдает датафрейм с транзакциями, прошедшими от начала месяца до введённой даты. """
     filter_by_date_logger = logging.getLogger('filter_by_date')
 
     date_start, date_stop = calculate_time_range(moment)
@@ -151,7 +150,7 @@ def find_exchange_rate(currency:str) -> str:
     headers = {"apikey": API_KEY_CUR}
 
     find_exchange_rate_logger.info(f"Отправлен запрос по адресу {url}, узнать, сколько рублей стоит {base}.")
-    response = requests.request("GET", url, headers=headers, params=payload)
+    response = requests.get(url, headers=headers, params=payload)
 
     status_code = response.status_code
     find_exchange_rate_logger.info(f'Получен код статуса {status_code}.')
